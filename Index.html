@@ -62,12 +62,26 @@ function updateOdometerDisplay() {
   document.getElementById('digit5').textContent = currentValue % 10;
 }
 
-function animateOdometer() {
-  const targetValue = parseInt(document.getElementById('targetValue').value, 10);
-  if (isNaN(targetValue) || targetValue < 0 || targetValue > 99999) {
+function animateOdometer(targetValue) {
+  // Asegura que targetValue sea un número
+  const numericTargetValue = parseInt(targetValue, 10);
+
+  if (isNaN(numericTargetValue) || numericTargetValue < 0 || numericTargetValue > 99999) {
     alert("Por favor, ingresa un número válido entre 0 y 99999.");
     return;
   }
+  
+  function incrementOdometer() {
+    if (currentValue < numericTargetValue) {
+      currentValue++;
+      updateOdometerDisplay();
+      requestAnimationFrame(incrementOdometer);
+    }
+  }
+  
+  incrementOdometer();
+}
+
   
   function incrementOdometer() {
     if (currentValue < targetValue) {
@@ -81,22 +95,23 @@ function animateOdometer() {
 }
 
 async function loadValueFromAppsScript() {
-  const scriptUrl = 'AKfycbyRHzgsuSAMfi3i6p40Ef4Ew425w9zgNYhDKjBXnEGc0QRnlZDWJsprV6RTpI3LKfpQ';
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbyRHzgsuSAMfi3i6p40Ef4Ew425w9zgNYhDKjBXnEGc0QRnlZDWJsprV6RTpI3LKfpQ/exec';
   try {
     const response = await fetch(scriptUrl);
     const textData = await response.text();
     const data = parseInt(textData.trim(), 10); // Asegura que el valor se convierta en un entero
-    if (isNaN(data) || data < 0 || data > 99999) {
-      alert("Por favor, asegúrate de que el número en Google Sheets esté entre 0 y 99999.");
-      return;
+
+    if (!isNaN(data) && data >= 0 && data <= 99999) {
+      animateOdometer(data); // Pasa el valor numérico directamente
+    } else {
+      alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que esté entre 0 y 99999.");
     }
-    document.getElementById('targetValue').value = data;
-    animateOdometer(); // Inicia la animación automáticamente
   } catch (error) {
     console.error('Error al cargar los datos de Apps Script:', error);
     alert('Error al cargar el valor desde Apps Script.');
   }
 }
+
 
 // Llama a esta función cuando tu página haya cargado completamente
 window.onload = function() {
