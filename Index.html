@@ -84,8 +84,13 @@ async function loadValueFromAppsScript() {
   const scriptUrl = 'AKfycbyRHzgsuSAMfi3i6p40Ef4Ew425w9zgNYhDKjBXnEGc0QRnlZDWJsprV6RTpI3LKfpQ';
   try {
     const response = await fetch(scriptUrl);
-    const data = await response.text();
-    document.getElementById('targetValue').value = data.trim();
+    const textData = await response.text();
+    const data = parseInt(textData.trim(), 10); // Asegura que el valor se convierta en un entero
+    if (isNaN(data) || data < 0 || data > 99999) {
+      alert("Por favor, asegúrate de que el número en Google Sheets esté entre 0 y 99999.");
+      return;
+    }
+    document.getElementById('targetValue').value = data;
     animateOdometer(); // Inicia la animación automáticamente
   } catch (error) {
     console.error('Error al cargar los datos de Apps Script:', error);
