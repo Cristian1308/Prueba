@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odómetro Funcional con Google Sheets</title>
+<style>
+  .odometer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #333;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .digit {
+    width: 30px;
+    height: 50px;
+    background-color: #fff;
+    color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 2px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 24px;
+    border-radius: 3px;
+  }
+
+  .input-container {
+    text-align: center;
+    margin-top: 20px;
+    display: none; /* Oculta el input ya que el valor vendrá de Google Sheets */
+  }
+</style>
+</head>
+<body>
+
+<div class="odometer">
+  <div class="digit" id="digit1">0</div>
+  <div class="digit" id="digit2">0</div>
+  <div class="digit" id="digit3">0</div>
+  <div class="digit" id="digit4">0</div>
+  <div class="digit" id="digit5">0</div>
+</div>
+
+<div class="input-container">
+  <input type="number" id="targetValue" placeholder="Ingresa un número" />
+  <button onclick="animateOdometer()">Iniciar</button>
+</div>
+
+<script>
+let currentValue = 0; // Valor actual del odómetro
+
+function updateOdometerDisplay() {
+  // Ajusta los dígitos individuales
+  document.getElementById('digit1').textContent = Math.floor(currentValue / 10000) % 10;
+  document.getElementById('digit2').textContent = Math.floor(currentValue / 1000) % 10;
+  document.getElementById('digit3').textContent = Math.floor(currentValue / 100) % 10;
+  document.getElementById('digit4').textContent = Math.floor(currentValue / 10) % 10;
+  document.getElementById('digit5').textContent = currentValue % 10;
+}
+
+function animateOdometer() {
+  const targetValue = parseInt(document.getElementById('targetValue').value, 10);
+  if (isNaN(targetValue) || targetValue < 0 || targetValue > 99999) {
+    alert("Por favor, ingresa un número válido entre 0 y 99999.");
+    return;
+  }
+  
+  function incrementOdometer() {
+    if (currentValue < targetValue) {
+      currentValue++;
+      updateOdometerDisplay();
+      requestAnimationFrame(incrementOdometer);
+    }
+  }
+  
+  incrementOdometer();
+}
+
+async function loadValueFromAppsScript() {
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbyRHzgsuSAMfi3i6p40Ef4Ew425w9zgNYhDKjBXnEGc0QRnlZDWJsprV6RTpI3LKfpQ/exec';
+  try {
+    const response = await fetch(scriptUrl);
+    const data = await response.text();
+    document.getElementById('targetValue').value = data.trim();
+    animateOdometer(); // Inicia la animación automáticamente
+  } catch (error) {
+    console.error('Error al cargar los datos de Apps Script:', error);
+    alert('Error al cargar el valor desde Apps Script.');
+  }
+}
+
+// Llama a esta función cuando tu página haya cargado completamente
+window.onload = function() {
+  loadValueFromAppsScript();
+};
+</script>
+
+</body>
+</html>
