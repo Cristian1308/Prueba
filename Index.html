@@ -54,6 +54,9 @@
   <div class="digit" id="budgetDigit1">0</div>
   <div class="digit" id="budgetDigit2">0</div>
   <div class="digit" id="budgetDigit3">0</div>
+  <div class="digit" id="budgetDigit4">0</div>
+  <div class="digit" id="budgetDigit5">0</div>
+  <div class="digit" id="budgetDigit6">0</div>
 </div>
 
 <script>
@@ -61,22 +64,23 @@ function randomDigit() {
   return Math.floor(Math.random() * 10);
 }
 
-function updateOdometerDisplay(value, type) {
-  const valueStr = value.toString().padStart(3, '0');
-  document.getElementById(type + 'Digit1').textContent = valueStr[0];
-  document.getElementById(type + 'Digit2').textContent = valueStr[1];
-  document.getElementById(type + 'Digit3').textContent = valueStr[2];
+function updateOdometerDisplay(value, type, length) {
+  const valueStr = value.toString().padStart(length, '0');
+  for (let i = 0; i < length; i++) {
+    document.getElementById(`${type}Digit${i + 1}`).textContent = valueStr[i];
+  }
 }
 
-function confuseBeforeReveal(duration, targetValue, type) {
+function confuseBeforeReveal(duration, targetValue, type, length) {
   const endTime = Date.now() + duration;
   function updateRandomly() {
     if (Date.now() < endTime) {
-      updateOdometerDisplay(Math.floor(Math.random() * 1000), type);
+      const randomValue = Math.floor(Math.random() * Math.pow(10, length));
+      updateOdometerDisplay(randomValue, type, length);
       requestAnimationFrame(updateRandomly);
     } else {
       // Revela el valor final
-      updateOdometerDisplay(targetValue, type);
+      updateOdometerDisplay(targetValue, type, length);
     }
   }
   updateRandomly();
@@ -88,11 +92,11 @@ async function loadValueFromAppsScript() {
     const response = await fetch(scriptUrl);
     const data = await response.json(); // Asume que el servidor devuelve un objeto JSON
 
-    if (!isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999 && !isNaN(data.presupuesto) && data.presupuesto >= 0 && data.presupuesto <= 999) {
-      confuseBeforeReveal(5000, data.ventas, 'sales');
-      confuseBeforeReveal(5000, data.presupuesto, 'budget');
+    if (!isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999 && !isNaN(data.presupuesto) && data.presupuesto >= 0 && data.presupuesto <= 999999) {
+      confuseBeforeReveal(5000, data.ventas, 'sales', 3); // 3 dígitos para ventas
+      confuseBeforeReveal(5000, data.presupuesto, 'budget', 6); // 6 dígitos para presupuesto
     } else {
-      alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que esté entre 0 y 999.");
+      alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que las ventas estén entre 0 y 999 y el presupuesto entre 0 y 999999.");
     }
   } catch (error) {
     console.error('Error al cargar los datos de Apps Script:', error);
@@ -107,5 +111,3 @@ window.onload = function() {
 
 </body>
 </html>
-
-  
