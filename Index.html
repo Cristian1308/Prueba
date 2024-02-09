@@ -11,7 +11,7 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around; /* Cambiado para distribuir el contenido */
     align-items: center;
     font-family: 'Montserrat', sans-serif;
     background-color: #f0f0f0;
@@ -19,8 +19,7 @@
 
   .title {
     color: #333;
-    font-size: 40px;
-    margin-bottom: 10px; /* Más cerca del odómetro */
+    font-size: 2rem;
   }
 
   .odometer {
@@ -35,19 +34,30 @@
     justify-content: center;
     align-items: center;
     margin: 0 2px; /* Dígitos más pegados */
-    font-size: 280px; /* Tamaño de fuente mucho más grande */
+    font-size: 120px; /* Tamaño de fuente mucho más grande */
     font-weight: 800; /* Montserrat Extra Bold */
   }
 </style>
 </head>
 <body>
 
-<div class="title">Ventas</div>
+<div class="odometer-section">
+  <div class="title">Ventas</div>
+  <div class="odometer">
+    <div class="digit" id="digit1">0</div>
+    <div class="digit" id="digit2">0</div>
+    <div class="digit" id="digit3">0</div>
+  </div>
+</div>
 
-<div class="odometer">
-  <div class="digit" id="digit1">0</div>
-  <div class="digit" id="digit2">0</div>
-  <div class="digit" id="digit3">0</div>
+<!-- Duplicado de la sección de odómetro -->
+<div class="odometer-section">
+  <div class="title">Ventas</div>
+  <div class="odometer">
+    <div class="digit" id="digit4">0</div>
+    <div class="digit" id="digit5">0</div>
+    <div class="digit" id="digit6">0</div>
+  </div>
 </div>
 
 <script>
@@ -60,18 +70,27 @@ function updateOdometerDisplay(value) {
   document.getElementById('digit1').textContent = valueStr[0];
   document.getElementById('digit2').textContent = valueStr[1];
   document.getElementById('digit3').textContent = valueStr[2];
+  // Duplica el valor para el segundo odómetro
+  document.getElementById('digit4').textContent = valueStr[0];
+  document.getElementById('digit5').textContent = valueStr[1];
+  document.getElementById('digit6').textContent = valueStr[2];
 }
 
 function confuseBeforeReveal(duration, targetValue) {
   const endTime = Date.now() + duration;
   function updateRandomly() {
     if (Date.now() < endTime) {
-      document.getElementById('digit1').textContent = randomDigit();
-      document.getElementById('digit2').textContent = randomDigit();
-      document.getElementById('digit3').textContent = randomDigit();
+      const randDigits = [randomDigit(), randomDigit(), randomDigit()];
+      document.getElementById('digit1').textContent = randDigits[0];
+      document.getElementById('digit2').textContent = randDigits[1];
+      document.getElementById('digit3').textContent = randDigits[2];
+      // Aplica los mismos dígitos aleatorios al segundo odómetro
+      document.getElementById('digit4').textContent = randDigits[0];
+      document.getElementById('digit5').textContent = randDigits[1];
+      document.getElementById('digit6').textContent = randDigits[2];
       requestAnimationFrame(updateRandomly);
     } else {
-      // Revela el valor final
+      // Revela el valor final en ambos odómetros
       updateOdometerDisplay(targetValue);
     }
   }
@@ -104,5 +123,4 @@ window.onload = function() {
 
 </body>
 </html>
-
 
