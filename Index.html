@@ -9,59 +9,66 @@
   body, html {
     height: 100%;
     margin: 0;
-    padding: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     font-family: 'Montserrat', sans-serif;
-    background-image: url("DEGRADE JDD.jpg");
+    background-color: #f0f0f0;
+    background-image: url('DEGRADE JDD.jpg'); /* Añade tu imagen de fondo aquí */
+    background-size: cover; /* Cubre todo el fondo */
+    background-position: center; /* Centra la imagen de fondo */
   }
 
   .container {
     text-align: center;
+    background-color: rgba(255, 255, 255, 0.5); /* Fondo semi-transparente para mejorar la legibilidad */
     padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sutil sombra para dar profundidad */
   }
 
   .logo {
-    max-width: 100%;
+    max-width: 80%; /* Ajustable según necesidad */
     height: auto;
+    margin-bottom: 20px;
   }
 
   .title {
     color: #333;
-    font-size: 2em;
-    margin: 20px 0;
+    font-size: 2rem; /* Ajustable según necesidad */
+    margin-bottom: 20px;
   }
 
   .odometer, .currency {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap; /* Permite envolver los elementos si el espacio es limitado */
   }
 
   .digit, .currency {
     color: #000;
     margin: 0 5px;
-    font-size: 5em;
+    font-size: 4rem; /* Ajustable según necesidad */
     font-weight: 800;
   }
 
   @media (max-width: 768px) {
     .digit, .currency {
-      font-size: 3em;
+      font-size: 2.5rem; /* Ajustable según necesidad */
     }
     .logo {
-      width: 50%; /* Ajustar según necesidad */
+      max-width: 60%;
     }
   }
 
   @media (max-width: 480px) {
     .digit, .currency {
-      font-size: 2em;
+      font-size: 2rem; /* Ajustable según necesidad */
     }
     .logo {
-      width: 70%; /* Ajustar según necesidad */
+      max-width: 80%;
     }
   }
 </style>
@@ -79,7 +86,7 @@
 
   <div class="title">Presupuesto</div>
   <div class="odometer">
-    <div class="currency">$</div>
+    <span class="currency">$</span>
     <div class="digit" id="budgetDigit1">0</div>
     <div class="digit" id="budgetDigit2">0</div>
     <div class="digit" id="budgetDigit3">0</div>
@@ -94,26 +101,23 @@ function randomDigit() {
   return Math.floor(Math.random() * 10);
 }
 
-function updateOdometerDisplay(idPrefix, value, minLength) {
-  const valueStr = value.toString().padStart(minLength, '0');
-  for (let i = 0; i < minLength; i++) {
-    const digitId = `${idPrefix}${i+1}`;
-    document.getElementById(digitId).textContent = valueStr[i];
+function updateOdometerDisplay(idPrefix, value, length) {
+  const valueStr = value.toString().padStart(length, '0');
+  for (let i = 0; i < length; i++) {
+    document.getElementById(`${idPrefix}${i + 1}`).textContent = valueStr[i];
   }
 }
 
-function confuseBeforeReveal(idPrefix, minLength, duration, targetValue) {
+function confuseBeforeReveal(idPrefix, length, duration, targetValue) {
   const endTime = Date.now() + duration;
   function updateRandomly() {
     if (Date.now() < endTime) {
-      for (let i = 0; i < minLength; i++) {
-        const digitId = `${idPrefix}${i+1}`;
-        document.getElementById(digitId).textContent = randomDigit();
+      for (let i = 1; i <= length; i++) {
+        document.getElementById(`${idPrefix}${i}`).textContent = randomDigit();
       }
       requestAnimationFrame(updateRandomly);
     } else {
-      // Revela el valor final
-      updateOdometerDisplay(idPrefix, targetValue, minLength);
+      updateOdometerDisplay(idPrefix, targetValue, length);
     }
   }
   updateRandomly();
@@ -123,21 +127,22 @@ async function loadValueFromAppsScript() {
   const scriptUrl = 'https://script.google.com/macros/s/AKfycbyhuzTHRWG8t6mJJuAfY5-y-C7xx8XVK5kJVyiRh_yZpFbpwpcV4SO0yg6Ch5uFziXo/exec';
   try {
     const response = await fetch(scriptUrl);
-    const data = await response.json(); // Asume que el script devuelve un objeto JSON
+    const {ventas, presupuesto} = await response.json();
 
-    if(data && !isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999) {
-      confuseBeforeReveal('salesDigit', 3, 2000, data.ventas); // 2 segundos de confusión para las ventas
+    if (!isNaN(ventas) && ventas >= 0 && ventas <= 999) {
+      confuseBeforeReveal('salesDigit', 3, 2000, ventas); // 2 segundos para ventas
     } else {
-      console.error("El valor de ventas obtenido no es válido.");
+      alert("El valor de ventas obtenido no es válido.");
     }
 
-    if(data && !isNaN(data.presupuesto) && data.presupuesto >= 0) {
-      updateOdometerDisplay('budgetDigit', data.presupuesto, 6); // Presupuesto actualizado directamente sin animación
+    if (!isNaN(presupuesto) && presupuesto >= 0 && presupuesto <= 999999) {
+      confuseBeforeReveal('budgetDigit', 6, 3000, presupuesto); // 3 segundos para presupuesto
     } else {
-      console.error("El valor de presupuesto obtenido no es válido.");
+      alert("El valor de presupuesto obtenido no es válido.");
     }
   } catch (error) {
-    console.error('Error al cargar los datos de Apps Script:', error);
+    console.error('Error al cargar los datos:', error);
+    alert('Error al cargar los valores desde Apps Script.');
   }
 }
 
@@ -148,4 +153,5 @@ window.onload = function() {
 
 </body>
 </html>
+
 
