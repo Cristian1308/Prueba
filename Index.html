@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Odómetro de Ventas</title>
+<title>Odómetro de Ventas y Presupuesto</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
 <style>
   body, html {
@@ -43,11 +43,17 @@
 <body>
 
 <div class="title">Ventas</div>
-
 <div class="odometer">
-  <div class="digit" id="digit1">0</div>
-  <div class="digit" id="digit2">0</div>
-  <div class="digit" id="digit3">0</div>
+  <div class="digit" id="salesDigit1">0</div>
+  <div class="digit" id="salesDigit2">0</div>
+  <div class="digit" id="salesDigit3">0</div>
+</div>
+
+<div class="title">Presupuesto</div>
+<div class="odometer">
+  <div class="digit" id="budgetDigit1">0</div>
+  <div class="digit" id="budgetDigit2">0</div>
+  <div class="digit" id="budgetDigit3">0</div>
 </div>
 
 <script>
@@ -55,39 +61,36 @@ function randomDigit() {
   return Math.floor(Math.random() * 10);
 }
 
-function updateOdometerDisplay(value) {
+function updateOdometerDisplay(value, type) {
   const valueStr = value.toString().padStart(3, '0');
-  document.getElementById('digit1').textContent = valueStr[0];
-  document.getElementById('digit2').textContent = valueStr[1];
-  document.getElementById('digit3').textContent = valueStr[2];
+  document.getElementById(type + 'Digit1').textContent = valueStr[0];
+  document.getElementById(type + 'Digit2').textContent = valueStr[1];
+  document.getElementById(type + 'Digit3').textContent = valueStr[2];
 }
 
-function confuseBeforeReveal(duration, targetValue) {
+function confuseBeforeReveal(duration, targetValue, type) {
   const endTime = Date.now() + duration;
   function updateRandomly() {
     if (Date.now() < endTime) {
-      document.getElementById('digit1').textContent = randomDigit();
-      document.getElementById('digit2').textContent = randomDigit();
-      document.getElementById('digit3').textContent = randomDigit();
+      updateOdometerDisplay(Math.floor(Math.random() * 1000), type);
       requestAnimationFrame(updateRandomly);
     } else {
       // Revela el valor final
-      updateOdometerDisplay(targetValue);
+      updateOdometerDisplay(targetValue, type);
     }
   }
   updateRandomly();
 }
 
 async function loadValueFromAppsScript() {
-  // Asume que este es tu URL de Google Apps Script que devuelve el valor deseado
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxBEfbJuuueaJM-q1bCCGVYWqrezNPZLKcYKYz_NV2F2vuNjL_2AkikzKCgPdasXOEP/exec';
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbyhuzTHRWG8t6mJJuAfY5-y-C7xx8XVK5kJVyiRh_yZpFbpwpcV4SO0yg6Ch5uFziXo/exec';
   try {
     const response = await fetch(scriptUrl);
-    const textData = await response.text();
-    const data = parseInt(textData.trim(), 10);
+    const data = await response.json(); // Asume que el servidor devuelve un objeto JSON
 
-    if (!isNaN(data) && data >= 0 && data <= 999) {
-      confuseBeforeReveal(5000, data); // 5 segundos de confusión
+    if (!isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999 && !isNaN(data.presupuesto) && data.presupuesto >= 0 && data.presupuesto <= 999) {
+      confuseBeforeReveal(5000, data.ventas, 'sales');
+      confuseBeforeReveal(5000, data.presupuesto, 'budget');
     } else {
       alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que esté entre 0 y 999.");
     }
