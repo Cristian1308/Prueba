@@ -15,7 +15,7 @@
     justify-content: center;
     align-items: center;
     font-family: 'Montserrat', sans-serif;
-    background-image: url('DEGRADE JDD.jpg'); /* Añade aquí la URL de tu imagen */
+    background-image: url('URL_DE_TU_IMAGEN_AQUI'); /* Añade aquí la URL de tu imagen */
     background-size: cover; /* Asegura que la imagen de fondo cubra todo el espacio disponible */
     background-position: center; /* Centra la imagen de fondo */
   }
@@ -27,7 +27,7 @@
 
   .title {
     color: inherit; /* Hereda el color del contenedor padre */
-    font-size: 40px;
+    font-size: 2em; /* Ajusta el tamaño de la fuente de forma relativa */
     margin-bottom: 10px;
   }
 
@@ -35,6 +35,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap; /* Permite que los dígitos se ajusten según el ancho disponible */
   }
 
   .digit {
@@ -42,9 +43,22 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 2px;
-    font-size: 280px;
+    margin: 0 5px;
+    font-size: 8em; /* Ajusta inicialmente el tamaño de la fuente de forma relativa */
     font-weight: 800;
+  }
+
+  /* Media Queries */
+  @media (max-width: 768px) {
+    .digit {
+      font-size: 4em; /* Ajusta el tamaño de la fuente para pantallas más pequeñas */
+    }
+  }
+
+  @media (max-width: 480px) {
+    .digit {
+      font-size: 3em; /* Ajusta aún más el tamaño de la fuente para pantallas muy pequeñas */
+    }
   }
 </style>
 </head>
@@ -60,10 +74,15 @@
 
   <div class="title">Presupuesto</div>
   <div class="odometer" id="budgetContainer">
-    <div class="digit" style="font-size: 140px;">$</div>
+    <div class="digit" style="font-size: 280px;">$</div>
     <!-- Los dígitos del presupuesto se actualizarán dinámicamente -->
   </div>
 </div>
+
+<!-- Tu script de JavaScript aquí -->
+
+</body>
+</html>
 
 <script>
 function randomDigit() {
