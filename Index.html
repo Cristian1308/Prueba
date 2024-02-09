@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Odómetro Animado con Google Sheets</title>
+<title>Odómetro Animado de 3 Dígitos</title>
 <style>
   .odometer {
     display: flex;
@@ -35,32 +35,39 @@
   <div class="digit" id="digit1">0</div>
   <div class="digit" id="digit2">0</div>
   <div class="digit" id="digit3">0</div>
-  <div class="digit" id="digit4">0</div>
-  <div class="digit" id="digit5">0</div>
 </div>
 
 <script>
 let currentValue = 0; // Valor actual del odómetro
 
 function updateOdometerDisplay(value) {
-  const valueStr = value.toString().padStart(5, '0');
-  for (let i = 0; i < 5; i++) {
+  const valueStr = value.toString().padStart(3, '0'); // Asegúrate de que siempre haya 3 dígitos
+  for (let i = 0; i < 3; i++) {
     document.getElementById(`digit${i+1}`).textContent = valueStr[i];
   }
 }
 
-function animateOdometer(newValue) {
-  const step = (newValue - currentValue) > 0 ? 1 : -1;
+function animateOdometer(targetValue) {
+  const duration = 1000; // Duración de la animación en milisegundos
+  const steps = duration / 10; // Cantidad de actualizaciones
+  let stepCount = 0;
+  const difference = targetValue - currentValue;
+  const incrementPerStep = difference / steps; // Incremento por cada paso
 
-  function stepAnimation() {
-    if (currentValue !== newValue) {
-      currentValue += step;
-      updateOdometerDisplay(currentValue);
-      requestAnimationFrame(stepAnimation);
+  function step() {
+    if (stepCount < steps) {
+      currentValue += incrementPerStep;
+      updateOdometerDisplay(Math.round(currentValue));
+      stepCount++;
+      requestAnimationFrame(step);
+    } else {
+      // Asegura que el odómetro muestre el valor exacto al finalizar
+      currentValue = targetValue;
+      updateOdometerDisplay(targetValue);
     }
   }
 
-  stepAnimation();
+  step();
 }
 
 async function loadValueFromAppsScript() {
@@ -70,10 +77,10 @@ async function loadValueFromAppsScript() {
     const textData = await response.text();
     const data = parseInt(textData.trim(), 10);
 
-    if (!isNaN(data) && data >= 0 && data <= 99999) {
+    if (!isNaN(data) && data >= 0 && data <= 999) {
       animateOdometer(data);
     } else {
-      alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que esté entre 0 y 99999.");
+      alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que esté entre 0 y 999.");
     }
   } catch (error) {
     console.error('Error al cargar los datos de Apps Script:', error);
@@ -88,3 +95,4 @@ window.onload = function() {
 
 </body>
 </html>
+
