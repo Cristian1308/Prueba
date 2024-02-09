@@ -1,18 +1,26 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Odómetro Animado Confuso</title>
+<title>Odómetro de Ventas</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet"> <!-- Montserrat Extra Bold -->
 <style>
   body, html {
     height: 100%;
     margin: 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     font-family: 'Montserrat', sans-serif;
+    background-color: #f0f0f0;
+  }
+
+  .title {
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 20px;
   }
 
   .odometer {
@@ -20,26 +28,28 @@
     justify-content: center;
     align-items: center;
     background: #333;
-    padding: 10px;
-    border-radius: 5px;
+    padding: 20px;
+    border-radius: 8px;
   }
 
   .digit {
-    width: 30px;
-    height: 50px;
+    width: 60px; /* Aumentado el tamaño */
+    height: 100px; /* Aumentado el tamaño */
     background-color: #fff;
     color: #000;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 2px;
-    font-size: 24px;
-    font-weight: 800; /* Extra Bold */
-    border-radius: 3px;
+    margin: 0 5px;
+    font-size: 48px; /* Aumentado el tamaño */
+    font-weight: 800; /* Montserrat Extra Bold */
+    border-radius: 5px;
   }
 </style>
 </head>
 <body>
+
+<div class="title">Ventas</div>
 
 <div class="odometer">
   <div class="digit" id="digit1">0</div>
@@ -53,7 +63,7 @@ function randomDigit() {
 }
 
 function updateOdometerDisplay(value) {
-  const valueStr = value.toString().padStart(3, '0'); // Asegúrate de que siempre haya 3 dígitos
+  const valueStr = value.toString().padStart(3, '0');
   document.getElementById('digit1').textContent = valueStr[0];
   document.getElementById('digit2').textContent = valueStr[1];
   document.getElementById('digit3').textContent = valueStr[2];
@@ -76,15 +86,15 @@ function confuseBeforeReveal(duration, targetValue) {
 }
 
 async function loadValueFromAppsScript() {
-  // Asegúrate de reemplazar 'TU_URL_DE_APPS_SCRIPT' con tu URL real
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxBEfbJuuueaJM-q1bCCGVYWqrezNPZLKcYKYz_NV2F2vuNjL_2AkikzKCgPdasXOEP/exec';
+  // Reemplaza 'TU_URL_DE_APPS_SCRIPT' con tu URL real
+  const scriptUrl = 'TU_URL_DE_APPS_SCRIPT';
   try {
     const response = await fetch(scriptUrl);
     const textData = await response.text();
     const data = parseInt(textData.trim(), 10);
 
     if (!isNaN(data) && data >= 0 && data <= 999) {
-      confuseBeforeReveal(5000, data); // 5000 milisegundos = 5 segundos de confusión
+      confuseBeforeReveal(5000, data); // 5 segundos de confusión
     } else {
       alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que esté entre 0 y 999.");
     }
