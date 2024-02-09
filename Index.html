@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Odómetro Funcional con Google Sheets</title>
+<title>Odómetro Animado con Google Sheets</title>
 <style>
   .odometer {
     display: flex;
@@ -43,12 +43,24 @@
 let currentValue = 0; // Valor actual del odómetro
 
 function updateOdometerDisplay(value) {
-  // Convierte el valor a una cadena y asegura que tenga 5 caracteres, rellenando con ceros si es necesario
   const valueStr = value.toString().padStart(5, '0');
-  // Actualiza cada dígito del odómetro
   for (let i = 0; i < 5; i++) {
     document.getElementById(`digit${i+1}`).textContent = valueStr[i];
   }
+}
+
+function animateOdometer(newValue) {
+  const step = (newValue - currentValue) > 0 ? 1 : -1;
+
+  function stepAnimation() {
+    if (currentValue !== newValue) {
+      currentValue += step;
+      updateOdometerDisplay(currentValue);
+      requestAnimationFrame(stepAnimation);
+    }
+  }
+
+  stepAnimation();
 }
 
 async function loadValueFromAppsScript() {
@@ -56,11 +68,10 @@ async function loadValueFromAppsScript() {
   try {
     const response = await fetch(scriptUrl);
     const textData = await response.text();
-    const data = parseInt(textData.trim(), 10); // Asegura que el valor se convierta en un entero
+    const data = parseInt(textData.trim(), 10);
 
     if (!isNaN(data) && data >= 0 && data <= 99999) {
-      currentValue = data; // Actualiza el valor actual del odómetro
-      updateOdometerDisplay(currentValue); // Actualiza la visualización del odómetro
+      animateOdometer(data);
     } else {
       alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que esté entre 0 y 99999.");
     }
@@ -70,7 +81,6 @@ async function loadValueFromAppsScript() {
   }
 }
 
-// Llama a esta función cuando tu página haya cargado completamente
 window.onload = function() {
   loadValueFromAppsScript();
 };
@@ -78,5 +88,3 @@ window.onload = function() {
 
 </body>
 </html>
-
-
