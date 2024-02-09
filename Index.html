@@ -84,13 +84,14 @@ function confuseBeforeReveal(duration, targetValue, type, length) {
     if (Date.now() < endTime) {
       const randomValue = Math.floor(Math.random() * Math.pow(10, length));
       updateOdometerDisplay(randomValue, type, length);
-      requestAnimationFrame(updateRandomly);
+      setTimeout(updateRandomly, 100); // Ajusta este valor para ralentizar/aumentar la velocidad
     } else {
       updateOdometerDisplay(targetValue, type, length);
     }
   }
   updateRandomly();
 }
+
 
 async function loadValueFromAppsScript() {
   const scriptUrl = 'https://script.google.com/macros/s/AKfycbyhuzTHRWG8t6mJJuAfY5-y-C7xx8XVK5kJVyiRh_yZpFbpwpcV4SO0yg6Ch5uFziXo/exec';
