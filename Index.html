@@ -24,12 +24,13 @@
   }
 
   .logo {
-    margin-bottom: 20px;
+    max-width: 100%;
+    height: auto;
   }
 
   .title {
     color: #333;
-    font-size: 2em; /* Ajusta este valor para cambiar el tamaño del título */
+    font-size: 2em;
     margin: 20px 0;
   }
 
@@ -42,23 +43,25 @@
   .digit, .currency {
     color: #000;
     margin: 0 5px;
-    font-size: 5em; /* Ajusta el tamaño inicial de los dígitos y el signo $ */
+    font-size: 5em;
     font-weight: 800;
   }
 
-  /* Ajustes responsivos */
   @media (max-width: 768px) {
     .digit, .currency {
-      font-size: 3em; /* Tamaño más pequeño en dispositivos medianos */
+      font-size: 3em;
+    }
+    .logo {
+      width: 50%; /* Ajustar según necesidad */
     }
   }
 
   @media (max-width: 480px) {
     .digit, .currency {
-      font-size: 2em; /* Tamaño aún más pequeño en dispositivos pequeños */
+      font-size: 2em;
     }
     .logo {
-      width: 60%; /* Logo más pequeño en dispositivos pequeños */
+      width: 70%; /* Ajustar según necesidad */
     }
   }
 </style>
