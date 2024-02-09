@@ -99,8 +99,8 @@ async function loadValueFromAppsScript() {
     const data = await response.json(); // Asume que el servidor devuelve un objeto JSON
 
     if (!isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999 && !isNaN(data.presupuesto) && data.presupuesto >= 0) {
-      confuseBeforeReveal(5000, data.ventas, 'sales', 3); // 3 dígitos para ventas
-      confuseBeforeReveal(5000, data.presupuesto, 'budget', 6); // 6 dígitos ajustados dinámicamente para presupuesto
+      confuseBeforeReveal(2500, data.ventas, 'sales', 3); // 3 dígitos para ventas
+      confuseBeforeReveal(2500, data.presupuesto, 'budget', 6); // 6 dígitos ajustados dinámicamente para presupuesto
     } else {
       alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que las ventas estén entre 0 y 999 y el presupuesto sea un número positivo.");
     }
