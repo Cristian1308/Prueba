@@ -15,27 +15,18 @@
     align-items: center;
     font-family: 'Montserrat', sans-serif;
     background-image: url("DEGRADE JDD.jpg");
-    background-size: cover; /* Asegura que el fondo cubra toda la página */
-  }
-
-  img.logo {
-    max-width: 90%; /* Ajusta el logo para que no sea demasiado grande en pantallas grandes */
-    height: auto; /* Mantiene la proporción del logo */
-    margin: 20px 0; /* Espacio arriba y abajo del logo */
   }
 
   .title {
     color: #333;
-    font-size: calc(16px + 2vmin); /* Ajusta el tamaño del título de forma responsiva */
-    text-align: center; /* Centra el texto del título */
-    margin-bottom: 10px;
+    font-size: 40px;
+    margin-bottom: 10px; /* Más cerca del odómetro */
   }
 
   .odometer {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap; /* Permite que los dígitos se ajusten según el tamaño de la pantalla */
   }
 
   .digit {
@@ -43,20 +34,16 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 2px;
-    font-size: calc(40px + 5vmin); /* Hace que el tamaño de los dígitos sea responsivo */
-    font-weight: 800;
-  }
-
-  @media (max-width: 768px) {
-    .digit {
-      font-size: calc(30px + 5vmin); /* Tamaño de fuente más pequeño para pantallas estrechas */
-    }
+    margin: 0 2px; /* Dígitos más pegados */
+    font-size: 280px; /* Tamaño de fuente ajustado para presupuesto */
+    font-weight: 800; /* Montserrat Extra Bold */
   }
 </style>
 </head>
 <body>
-<center><img src="LOGO JDD BLANCO.png" class="logo"></center>
+<br>
+<center><img src="LOGO JDD BLANCO.png" width="300" height="150" ></center>
+<br>
 <div class="title">Ventas</div>
 <div class="odometer">
   <div class="digit" id="salesDigit1">0</div>
@@ -69,11 +56,6 @@
   <div class="digit" style="font-size: 140px;">$</div>
   <!-- Los dígitos del presupuesto se actualizarán dinámicamente -->
 </div>
-
-<!-- Aquí sigue el mismo script sin cambios -->
-</body>
-</html>
-
 
 <script>
 function randomDigit() {
@@ -138,6 +120,5 @@ window.onload = function() {
 
 </body>
 </html>
-
 
 
