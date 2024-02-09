@@ -35,7 +35,7 @@
     justify-content: center;
     align-items: center;
     margin: 0 2px; /* Dígitos más pegados */
-    font-size: 280px; /* Tamaño de fuente mucho más grande */
+    font-size: 140px; /* Tamaño de fuente ajustado para presupuesto */
     font-weight: 800; /* Montserrat Extra Bold */
   }
 </style>
@@ -50,15 +50,9 @@
 </div>
 
 <div class="title">Presupuesto</div>
-<div class="odometer">
+<div class="odometer" id="budgetContainer">
   <div class="digit" style="font-size: 140px;">$</div>
-  <div class="digit" id="budgetDigit1">0</div>
-  <div class="digit" id="budgetDigit2">0</div>
-  <div class="digit" id="budgetDigit3">0</div>
-  <div class="digit" style="font-size: 140px;">.</div>
-  <div class="digit" id="budgetDigit4">0</div>
-  <div class="digit" id="budgetDigit5">0</div>
-  <div class="digit" id="budgetDigit6">0</div>
+  <!-- Los dígitos del presupuesto se actualizarán dinámicamente -->
 </div>
 
 <script>
@@ -67,9 +61,20 @@ function randomDigit() {
 }
 
 function updateOdometerDisplay(value, type, length) {
-  const valueStr = value.toString().padStart(length, '0');
-  for (let i = 0; i < length; i++) {
-    document.getElementById(`${type}Digit${i + 1}`).textContent = valueStr[i];
+  if (type === 'budget') {
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+    const formattedValue = formatter.format(value).slice(1); // Elimina el símbolo de dólar para usar el del HTML
+    document.getElementById(`${type}Container`).innerHTML = `<div class="digit" style="font-size: 140px;">$</div>` + formattedValue.split('').map(num => `<div class="digit">${num}</div>`).join('');
+  } else {
+    const valueStr = value.toString().padStart(length, '0');
+    for (let i = 0; i < length; i++) {
+      document.getElementById(`${type}Digit${i + 1}`).textContent = valueStr[i];
+    }
   }
 }
 
@@ -81,7 +86,6 @@ function confuseBeforeReveal(duration, targetValue, type, length) {
       updateOdometerDisplay(randomValue, type, length);
       requestAnimationFrame(updateRandomly);
     } else {
-      // Revela el valor final
       updateOdometerDisplay(targetValue, type, length);
     }
   }
@@ -94,11 +98,11 @@ async function loadValueFromAppsScript() {
     const response = await fetch(scriptUrl);
     const data = await response.json(); // Asume que el servidor devuelve un objeto JSON
 
-    if (!isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999 && !isNaN(data.presupuesto) && data.presupuesto >= 0 && data.presupuesto <= 999999) {
+    if (!isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999 && !isNaN(data.presupuesto) && data.presupuesto >= 0) {
       confuseBeforeReveal(5000, data.ventas, 'sales', 3); // 3 dígitos para ventas
-      confuseBeforeReveal(5000, data.presupuesto, 'budget', 6); // 6 dígitos para presupuesto
+      confuseBeforeReveal(5000, data.presupuesto, 'budget', 6); // 6 dígitos ajustados dinámicamente para presupuesto
     } else {
-      alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que las ventas estén entre 0 y 999 y el presupuesto entre 0 y 999999.");
+      alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que las ventas estén entre 0 y 999 y el presupuesto sea un número positivo.");
     }
   } catch (error) {
     console.error('Error al cargar los datos de Apps Script:', error);
