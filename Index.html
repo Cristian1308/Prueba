@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Odómetro Animado de 3 Dígitos</title>
+<title>Odómetro Animado Confuso</title>
 <style>
   .odometer {
     display: flex;
@@ -38,36 +38,31 @@
 </div>
 
 <script>
-let currentValue = 0; // Valor actual del odómetro
+function randomDigit() {
+  return Math.floor(Math.random() * 10);
+}
 
 function updateOdometerDisplay(value) {
   const valueStr = value.toString().padStart(3, '0'); // Asegúrate de que siempre haya 3 dígitos
-  for (let i = 0; i < 3; i++) {
-    document.getElementById(`digit${i+1}`).textContent = valueStr[i];
-  }
+  document.getElementById('digit1').textContent = valueStr[0];
+  document.getElementById('digit2').textContent = valueStr[1];
+  document.getElementById('digit3').textContent = valueStr[2];
 }
 
-function animateOdometer(targetValue) {
-  const duration = 1000; // Duración de la animación en milisegundos
-  const steps = duration / 10; // Cantidad de actualizaciones
-  let stepCount = 0;
-  const difference = targetValue - currentValue;
-  const incrementPerStep = difference / steps; // Incremento por cada paso
-
-  function step() {
-    if (stepCount < steps) {
-      currentValue += incrementPerStep;
-      updateOdometerDisplay(Math.round(currentValue));
-      stepCount++;
-      requestAnimationFrame(step);
+function confuseBeforeReveal(duration, targetValue) {
+  const endTime = Date.now() + duration;
+  function updateRandomly() {
+    if (Date.now() < endTime) {
+      document.getElementById('digit1').textContent = randomDigit();
+      document.getElementById('digit2').textContent = randomDigit();
+      document.getElementById('digit3').textContent = randomDigit();
+      requestAnimationFrame(updateRandomly);
     } else {
-      // Asegura que el odómetro muestre el valor exacto al finalizar
-      currentValue = targetValue;
+      // Revela el valor final
       updateOdometerDisplay(targetValue);
     }
   }
-
-  step();
+  updateRandomly();
 }
 
 async function loadValueFromAppsScript() {
@@ -78,7 +73,7 @@ async function loadValueFromAppsScript() {
     const data = parseInt(textData.trim(), 10);
 
     if (!isNaN(data) && data >= 0 && data <= 999) {
-      animateOdometer(data);
+      confuseBeforeReveal(5000, data); // 5000 milisegundos = 5 segundos de confusión
     } else {
       alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que esté entre 0 y 999.");
     }
@@ -95,4 +90,5 @@ window.onload = function() {
 
 </body>
 </html>
+
 
