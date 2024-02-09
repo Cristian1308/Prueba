@@ -15,26 +15,16 @@
     justify-content: center;
     align-items: center;
     font-family: 'Montserrat', sans-serif;
-    background-color: #f0f0f0;
-    background-image: url('DEGRADE JDD.jpg'); /* Añade tu imagen de fondo aquí si lo deseas */
-    background-size: cover;
-    background-position: center;
+    background-image: url("DEGRADE JDD.jpg");
   }
 
   .container {
-    width: 100%;
-    max-width: 600px; /* Ajusta esto según tus necesidades */
     text-align: center;
-    background: rgba(255, 255, 255, 0.8); /* Fondo semitransparente para mejorar la legibilidad */
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
 
   .logo {
     margin-bottom: 20px;
-    width: 80%; /* Ajusta el tamaño del logo */
-    max-width: 300px; /* Ajusta el tamaño máximo del logo */
   }
 
   .title {
@@ -85,13 +75,22 @@
   </div>
 
   <div class="title">Presupuesto</div>
-  <div class="odometer" id="budgetContainer">
+  <div class="odometer">
     <div class="currency">$</div>
-    <!-- Los dígitos del presupuesto se añadirán dinámicamente aquí -->
+    <div class="digit" id="budgetDigit1">0</div>
+    <div class="digit" id="budgetDigit2">0</div>
+    <div class="digit" id="budgetDigit3">0</div>
+    <div class="digit" id="budgetDigit4">0</div>
+    <div class="digit" id="budgetDigit5">0</div>
+    <div class="digit" id="budgetDigit6">0</div>
   </div>
 </div>
 
 <script>
+function randomDigit() {
+  return Math.floor(Math.random() * 10);
+}
+
 function updateOdometerDisplay(idPrefix, value, minLength) {
   const valueStr = value.toString().padStart(minLength, '0');
   for (let i = 0; i < minLength; i++) {
@@ -100,36 +99,37 @@ function updateOdometerDisplay(idPrefix, value, minLength) {
   }
 }
 
-function addBudgetDigits(budget) {
-  const budgetContainer = document.getElementById('budgetContainer');
-  const budgetStr = budget.toLocaleString('en-US');
-  
-  // Limpia los dígitos anteriores excepto el signo de dólar
-  budgetContainer.querySelectorAll('.digit').forEach(d => d.remove());
-
-  // Añade nuevos dígitos
-  budgetStr.split('').forEach((char, index) => {
-    const digitDiv = document.createElement('div');
-    digitDiv.classList.add('digit');
-    digitDiv.textContent = char;
-    budgetContainer.appendChild(digitDiv);
-  });
+function confuseBeforeReveal(idPrefix, minLength, duration, targetValue) {
+  const endTime = Date.now() + duration;
+  function updateRandomly() {
+    if (Date.now() < endTime) {
+      for (let i = 0; i < minLength; i++) {
+        const digitId = `${idPrefix}${i+1}`;
+        document.getElementById(digitId).textContent = randomDigit();
+      }
+      requestAnimationFrame(updateRandomly);
+    } else {
+      // Revela el valor final
+      updateOdometerDisplay(idPrefix, targetValue, minLength);
+    }
+  }
+  updateRandomly();
 }
 
 async function loadValueFromAppsScript() {
   const scriptUrl = 'https://script.google.com/macros/s/AKfycbyhuzTHRWG8t6mJJuAfY5-y-C7xx8XVK5kJVyiRh_yZpFbpwpcV4SO0yg6Ch5uFziXo/exec';
   try {
     const response = await fetch(scriptUrl);
-    const data = await response.json(); // Asumiendo que el script devuelve un objeto JSON
+    const data = await response.json(); // Asume que el script devuelve un objeto JSON
 
     if(data && !isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999) {
-      updateOdometerDisplay('salesDigit', data.ventas, 3);
+      confuseBeforeReveal('salesDigit', 3, 2000, data.ventas); // 2 segundos de confusión para las ventas
     } else {
       console.error("El valor de ventas obtenido no es válido.");
     }
 
     if(data && !isNaN(data.presupuesto) && data.presupuesto >= 0) {
-      addBudgetDigits(data.presupuesto);
+      updateOdometerDisplay('budgetDigit', data.presupuesto, 6); // Presupuesto actualizado directamente sin animación
     } else {
       console.error("El valor de presupuesto obtenido no es válido.");
     }
@@ -145,3 +145,4 @@ window.onload = function() {
 
 </body>
 </html>
+
