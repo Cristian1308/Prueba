@@ -15,18 +15,30 @@
     align-items: center;
     font-family: 'Montserrat', sans-serif;
     background-image: url("DEGRADE JDD.jpg");
+    background-size: cover;
+    background-position: center;
+  }
+
+  img.logo {
+    max-width: 80vw; /* Ajusta el logo a la anchura de la ventana de visualización */
+    height: auto;
+    margin: 2vh 0; /* Espaciado vertical basado en la altura de la ventana de visualización */
   }
 
   .title {
     color: #333;
-    font-size: 40px;
-    margin-bottom: 10px; /* Más cerca del odómetro */
+    font-size: 4vw; /* Ajusta el tamaño del título según el ancho de la ventana de visualización */
+    text-align: center;
+    margin: 2vh 0; /* Espaciado vertical basado en la altura de la ventana de visualización */
   }
 
   .odometer {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap; /* Permite que los elementos se ajusten en pantallas más pequeñas */
+    width: 100%;
+    padding: 0 5vw; /* Padding horizontal basado en el ancho de la ventana de visualización */
   }
 
   .digit {
@@ -34,16 +46,29 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 2px; /* Dígitos más pegados */
-    font-size: 280px; /* Tamaño de fuente ajustado para presupuesto */
-    font-weight: 800; /* Montserrat Extra Bold */
+    margin: 0 1vw; /* Espaciado horizontal basado en el ancho de la ventana de visualización */
+    font-size: 15vw; /* Ajusta el tamaño de los dígitos según el ancho de la ventana de visualización */
+    font-weight: 800;
+  }
+
+  @media (min-width: 768px) {
+    .title {
+      font-size: 2rem; /* Tamaño fijo para pantallas más grandes */
+    }
+
+    .digit {
+      font-size: 8rem; /* Tamaño fijo para los dígitos en pantallas más grandes */
+      margin: 0 10px; /* Espaciado fijo para pantallas más grandes */
+    }
+
+    img.logo {
+      max-width: 300px; /* Ancho fijo para el logo en pantallas más grandes */
+    }
   }
 </style>
 </head>
 <body>
-<br>
-<center><img src="LOGO JDD BLANCO.png" width="350" height="150" ></center>
-<br>
+<center><img src="LOGO JDD BLANCO.png" class="logo"></center>
 <div class="title">Ventas</div>
 <div class="odometer">
   <div class="digit" id="salesDigit1">0</div>
@@ -53,7 +78,7 @@
 
 <div class="title">Facturación</div>
 <div class="odometer" id="budgetContainer">
-  <div class="digit" style="font-size: 140px;">$</div>
+  <div class="digit" style="font-size: 15vw;">$</div>
   <!-- Los dígitos del presupuesto se actualizarán dinámicamente -->
 </div>
 
