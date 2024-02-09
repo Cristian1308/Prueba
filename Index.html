@@ -84,7 +84,7 @@ function confuseBeforeReveal(duration, targetValue, type, length) {
     if (Date.now() < endTime) {
       const randomValue = Math.floor(Math.random() * Math.pow(10, length));
       updateOdometerDisplay(randomValue, type, length);
-      setTimeout(updateRandomly, 250); // Ajusta este valor para ralentizar/aumentar la velocidad
+      setTimeout(updateRandomly, 600); // Ajusta este valor para ralentizar/aumentar la velocidad
     } else {
       updateOdometerDisplay(targetValue, type, length);
     }
