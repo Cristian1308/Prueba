@@ -9,18 +9,26 @@
   body, html {
     height: 100%;
     margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     font-family: 'Montserrat', sans-serif;
-    background-image: url("DEGRADE JDD.jpg");
+    background-image: url('URL_DE_TU_IMAGEN_AQUI'); /* Añade aquí la URL de tu imagen */
+    background-size: cover; /* Asegura que la imagen de fondo cubra todo el espacio disponible */
+    background-position: center; /* Centra la imagen de fondo */
+  }
+
+  .container {
+    text-align: center; /* Centra el contenido del contenedor */
+    color: #fff; /* Ajusta el color del texto para mejorar la visibilidad sobre tu fondo */
   }
 
   .title {
-    color: #333;
+    color: inherit; /* Hereda el color del contenedor padre */
     font-size: 40px;
-    margin-bottom: 10px; /* Más cerca del odómetro */
+    margin-bottom: 10px;
   }
 
   .odometer {
@@ -30,29 +38,31 @@
   }
 
   .digit {
-    color: #000;
+    color: inherit; /* Hereda el color del contenedor padre */
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 2px; /* Dígitos más pegados */
-    font-size: 280px; /* Tamaño de fuente ajustado para presupuesto */
-    font-weight: 800; /* Montserrat Extra Bold */
+    margin: 0 2px;
+    font-size: 140px;
+    font-weight: 800;
   }
 </style>
 </head>
 <body>
 
-<div class="title">Ventas</div>
-<div class="odometer">
-  <div class="digit" id="salesDigit1">0</div>
-  <div class="digit" id="salesDigit2">0</div>
-  <div class="digit" id="salesDigit3">0</div>
-</div>
+<div class="container">
+  <div class="title">Ventas</div>
+  <div class="odometer">
+    <div class="digit" id="salesDigit1">0</div>
+    <div class="digit" id="salesDigit2">0</div>
+    <div class="digit" id="salesDigit3">0</div>
+  </div>
 
-<div class="title">Facturación</div>
-<div class="odometer" id="budgetContainer">
-  <div class="digit" style="font-size: 140px;">$</div>
-  <!-- Los dígitos del presupuesto se actualizarán dinámicamente -->
+  <div class="title">Presupuesto</div>
+  <div class="odometer" id="budgetContainer">
+    <div class="digit" style="font-size: 140px;">$</div>
+    <!-- Los dígitos del presupuesto se actualizarán dinámicamente -->
+  </div>
 </div>
 
 <script>
