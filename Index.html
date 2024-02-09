@@ -27,12 +27,6 @@
     font-size: 24px;
     border-radius: 3px;
   }
-
-  .input-container {
-    text-align: center;
-    margin-top: 20px;
-    display: none; /* Oculta el input ya que el valor vendrá de Google Sheets */
-  }
 </style>
 </head>
 <body>
@@ -45,64 +39,28 @@
   <div class="digit" id="digit5">0</div>
 </div>
 
-<div class="input-container">
-  <input type="number" id="targetValue" placeholder="Ingresa un número" />
-  <button onclick="animateOdometer()">Iniciar</button>
-</div>
-
 <script>
 let currentValue = 0; // Valor actual del odómetro
 
-function updateOdometerDisplay() {
-  // Ajusta los dígitos individuales
-  document.getElementById('digit1').textContent = Math.floor(currentValue / 10000) % 10;
-  document.getElementById('digit2').textContent = Math.floor(currentValue / 1000) % 10;
-  document.getElementById('digit3').textContent = Math.floor(currentValue / 100) % 10;
-  document.getElementById('digit4').textContent = Math.floor(currentValue / 10) % 10;
-  document.getElementById('digit5').textContent = currentValue % 10;
-}
-
-function animateOdometer(targetValue) {
-  // Asegura que targetValue sea un número
-  const numericTargetValue = parseInt(targetValue, 10);
-
-  if (isNaN(numericTargetValue) || numericTargetValue < 0 || numericTargetValue > 99999) {
-    alert("Por favor, ingresa un número válido entre 0 y 99999.");
-    return;
+function updateOdometerDisplay(value) {
+  // Convierte el valor a una cadena y asegura que tenga 5 caracteres, rellenando con ceros si es necesario
+  const valueStr = value.toString().padStart(5, '0');
+  // Actualiza cada dígito del odómetro
+  for (let i = 0; i < 5; i++) {
+    document.getElementById(`digit${i+1}`).textContent = valueStr[i];
   }
-  
-  function incrementOdometer() {
-    if (currentValue < numericTargetValue) {
-      currentValue++;
-      updateOdometerDisplay();
-      requestAnimationFrame(incrementOdometer);
-    }
-  }
-  
-  incrementOdometer();
-}
-
-  
-  function incrementOdometer() {
-    if (currentValue < targetValue) {
-      currentValue++;
-      updateOdometerDisplay();
-      requestAnimationFrame(incrementOdometer);
-    }
-  }
-  
-  incrementOdometer();
 }
 
 async function loadValueFromAppsScript() {
-  const scriptUrl = 'AKfycbxBEfbJuuueaJM-q1bCCGVYWqrezNPZLKcYKYz_NV2F2vuNjL_2AkikzKCgPdasXOEP';
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxBEfbJuuueaJM-q1bCCGVYWqrezNPZLKcYKYz_NV2F2vuNjL_2AkikzKCgPdasXOEP/exec';
   try {
     const response = await fetch(scriptUrl);
     const textData = await response.text();
     const data = parseInt(textData.trim(), 10); // Asegura que el valor se convierta en un entero
 
     if (!isNaN(data) && data >= 0 && data <= 99999) {
-      animateOdometer(data); // Pasa el valor numérico directamente
+      currentValue = data; // Actualiza el valor actual del odómetro
+      updateOdometerDisplay(currentValue); // Actualiza la visualización del odómetro
     } else {
       alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que esté entre 0 y 99999.");
     }
@@ -112,7 +70,6 @@ async function loadValueFromAppsScript() {
   }
 }
 
-
 // Llama a esta función cuando tu página haya cargado completamente
 window.onload = function() {
   loadValueFromAppsScript();
@@ -121,3 +78,5 @@ window.onload = function() {
 
 </body>
 </html>
+
+
