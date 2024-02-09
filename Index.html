@@ -15,49 +15,60 @@
     justify-content: center;
     align-items: center;
     font-family: 'Montserrat', sans-serif;
-    background-image: url('DEGRADE JDD.jpg'); /* Añade aquí la URL de tu imagen */
-    background-size: cover; /* Asegura que la imagen de fondo cubra todo el espacio disponible */
-    background-position: center; /* Centra la imagen de fondo */
+    background-color: #f0f0f0;
+    background-image: url('DEGRADE JDD.jpg'); /* Añade tu imagen de fondo aquí si lo deseas */
+    background-size: cover;
+    background-position: center;
   }
 
   .container {
-    text-align: center; /* Centra el contenido del contenedor */
-    color: #fff; /* Ajusta el color del texto para mejorar la visibilidad sobre tu fondo */
+    width: 100%;
+    max-width: 600px; /* Ajusta esto según tus necesidades */
+    text-align: center;
+    background: rgba(255, 255, 255, 0.8); /* Fondo semitransparente para mejorar la legibilidad */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .logo {
+    margin-bottom: 20px;
+    width: 80%; /* Ajusta el tamaño del logo */
+    max-width: 300px; /* Ajusta el tamaño máximo del logo */
   }
 
   .title {
-    color: inherit; /* Hereda el color del contenedor padre */
-    font-size: 2em; /* Ajusta el tamaño de la fuente de forma relativa */
-    margin-bottom: 10px;
+    color: #333;
+    font-size: 2em; /* Ajusta este valor para cambiar el tamaño del título */
+    margin: 20px 0;
   }
 
-  .odometer {
+  .odometer, .currency {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap; /* Permite que los dígitos se ajusten según el ancho disponible */
   }
 
-  .digit {
-    color: inherit; /* Hereda el color del contenedor padre */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .digit, .currency {
+    color: #000;
     margin: 0 5px;
-    font-size: 8em; /* Ajusta inicialmente el tamaño de la fuente de forma relativa */
+    font-size: 5em; /* Ajusta el tamaño inicial de los dígitos y el signo $ */
     font-weight: 800;
   }
 
-  /* Media Queries */
+  /* Ajustes responsivos */
   @media (max-width: 768px) {
-    .digit {
-      font-size: 4em; /* Ajusta el tamaño de la fuente para pantallas más pequeñas */
+    .digit, .currency {
+      font-size: 3em; /* Tamaño más pequeño en dispositivos medianos */
     }
   }
 
   @media (max-width: 480px) {
-    .digit {
-      font-size: 3em; /* Ajusta aún más el tamaño de la fuente para pantallas muy pequeñas */
+    .digit, .currency {
+      font-size: 2em; /* Tamaño aún más pequeño en dispositivos pequeños */
+    }
+    .logo {
+      width: 60%; /* Logo más pequeño en dispositivos pequeños */
     }
   }
 </style>
@@ -65,6 +76,7 @@
 <body>
 
 <div class="container">
+  <img src="LOGO JDD BLANCO.png" alt="Logo" class="logo">
   <div class="title">Ventas</div>
   <div class="odometer">
     <div class="digit" id="salesDigit1">0</div>
@@ -74,69 +86,55 @@
 
   <div class="title">Presupuesto</div>
   <div class="odometer" id="budgetContainer">
-    <div class="digit" style="font-size: 140px;">$</div>
-    <!-- Los dígitos del presupuesto se actualizarán dinámicamente -->
+    <div class="currency">$</div>
+    <!-- Los dígitos del presupuesto se añadirán dinámicamente aquí -->
   </div>
 </div>
 
-<!-- Tu script de JavaScript aquí -->
-
-</body>
-</html>
-
 <script>
-function randomDigit() {
-  return Math.floor(Math.random() * 10);
-}
-
-function updateOdometerDisplay(value, type, length) {
-  if (type === 'budget') {
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
-    const formattedValue = formatter.format(value).slice(1); // Elimina el símbolo de dólar para usar el del HTML
-    document.getElementById(`${type}Container`).innerHTML = `<div class="digit" style="font-size: 140px;">$</div>` + formattedValue.split('').map(num => `<div class="digit">${num}</div>`).join('');
-  } else {
-    const valueStr = value.toString().padStart(length, '0');
-    for (let i = 0; i < length; i++) {
-      document.getElementById(`${type}Digit${i + 1}`).textContent = valueStr[i];
-    }
+function updateOdometerDisplay(idPrefix, value, minLength) {
+  const valueStr = value.toString().padStart(minLength, '0');
+  for (let i = 0; i < minLength; i++) {
+    const digitId = `${idPrefix}${i+1}`;
+    document.getElementById(digitId).textContent = valueStr[i];
   }
 }
 
-function confuseBeforeReveal(duration, targetValue, type, length) {
-  const endTime = Date.now() + duration;
-  function updateRandomly() {
-    if (Date.now() < endTime) {
-      const randomValue = Math.floor(Math.random() * Math.pow(10, length));
-      updateOdometerDisplay(randomValue, type, length);
-      setTimeout(updateRandomly, 50); // Ajusta este valor para ralentizar/aumentar la velocidad
-    } else {
-      updateOdometerDisplay(targetValue, type, length);
-    }
-  }
-  updateRandomly();
-}
+function addBudgetDigits(budget) {
+  const budgetContainer = document.getElementById('budgetContainer');
+  const budgetStr = budget.toLocaleString('en-US');
+  
+  // Limpia los dígitos anteriores excepto el signo de dólar
+  budgetContainer.querySelectorAll('.digit').forEach(d => d.remove());
 
+  // Añade nuevos dígitos
+  budgetStr.split('').forEach((char, index) => {
+    const digitDiv = document.createElement('div');
+    digitDiv.classList.add('digit');
+    digitDiv.textContent = char;
+    budgetContainer.appendChild(digitDiv);
+  });
+}
 
 async function loadValueFromAppsScript() {
   const scriptUrl = 'https://script.google.com/macros/s/AKfycbyhuzTHRWG8t6mJJuAfY5-y-C7xx8XVK5kJVyiRh_yZpFbpwpcV4SO0yg6Ch5uFziXo/exec';
   try {
     const response = await fetch(scriptUrl);
-    const data = await response.json(); // Asume que el servidor devuelve un objeto JSON
+    const data = await response.json(); // Asumiendo que el script devuelve un objeto JSON
 
-    if (!isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999 && !isNaN(data.presupuesto) && data.presupuesto >= 0) {
-      confuseBeforeReveal(5000, data.ventas, 'sales', 3); // 3 dígitos para ventas
-      confuseBeforeReveal(5000, data.presupuesto, 'budget', 6); // 6 dígitos ajustados dinámicamente para presupuesto
+    if(data && !isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999) {
+      updateOdometerDisplay('salesDigit', data.ventas, 3);
     } else {
-      alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que las ventas estén entre 0 y 999 y el presupuesto sea un número positivo.");
+      console.error("El valor de ventas obtenido no es válido.");
+    }
+
+    if(data && !isNaN(data.presupuesto) && data.presupuesto >= 0) {
+      addBudgetDigits(data.presupuesto);
+    } else {
+      console.error("El valor de presupuesto obtenido no es válido.");
     }
   } catch (error) {
     console.error('Error al cargar los datos de Apps Script:', error);
-    alert('Error al cargar el valor desde Apps Script.');
   }
 }
 
