@@ -14,86 +14,45 @@
     justify-content: center;
     align-items: center;
     font-family: 'Montserrat', sans-serif;
-    background-color: #f0f0f0;
-    background-image: url('DEGRADE JDD.jpg'); /* Añade tu imagen de fondo aquí */
-    background-size: cover; /* Cubre todo el fondo */
-    background-position: center; /* Centra la imagen de fondo */
-  }
-
-  .container {
-    text-align: center;
-    background-color: rgba(255, 255, 255, 0.5); /* Fondo semi-transparente para mejorar la legibilidad */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sutil sombra para dar profundidad */
-  }
-
-  .logo {
-    max-width: 80%; /* Ajustable según necesidad */
-    height: auto;
-    margin-bottom: 20px;
+    background-image: url("DEGRADE JDD.jpg");
   }
 
   .title {
     color: #333;
-    font-size: 2rem; /* Ajustable según necesidad */
-    margin-bottom: 20px;
+    font-size: 40px;
+    margin-bottom: 10px; /* Más cerca del odómetro */
   }
 
-  .odometer, .currency {
+  .odometer {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap; /* Permite envolver los elementos si el espacio es limitado */
   }
 
-  .digit, .currency {
+  .digit {
     color: #000;
-    margin: 0 5px;
-    font-size: 4rem; /* Ajustable según necesidad */
-    font-weight: 800;
-  }
-
-  @media (max-width: 768px) {
-    .digit, .currency {
-      font-size: 2.5rem; /* Ajustable según necesidad */
-    }
-    .logo {
-      max-width: 60%;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .digit, .currency {
-      font-size: 2rem; /* Ajustable según necesidad */
-    }
-    .logo {
-      max-width: 80%;
-    }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 2px; /* Dígitos más pegados */
+    font-size: 280px; /* Tamaño de fuente ajustado para presupuesto */
+    font-weight: 800; /* Montserrat Extra Bold */
   }
 </style>
 </head>
 <body>
+<center><img src="LOGO JDD BLANCO.png"></center>
+<div class="title">Ventas</div>
+<div class="odometer">
+  <div class="digit" id="salesDigit1">0</div>
+  <div class="digit" id="salesDigit2">0</div>
+  <div class="digit" id="salesDigit3">0</div>
+</div>
 
-<div class="container">
-  <img src="LOGO JDD BLANCO.png" alt="Logo" class="logo">
-  <div class="title">Ventas</div>
-  <div class="odometer">
-    <div class="digit" id="salesDigit1">0</div>
-    <div class="digit" id="salesDigit2">0</div>
-    <div class="digit" id="salesDigit3">0</div>
-  </div>
-
-  <div class="title">Presupuesto</div>
-  <div class="odometer">
-    <span class="currency">$</span>
-    <div class="digit" id="budgetDigit1">0</div>
-    <div class="digit" id="budgetDigit2">0</div>
-    <div class="digit" id="budgetDigit3">0</div>
-    <div class="digit" id="budgetDigit4">0</div>
-    <div class="digit" id="budgetDigit5">0</div>
-    <div class="digit" id="budgetDigit6">0</div>
-  </div>
+<div class="title">Facturación</div>
+<div class="odometer" id="budgetContainer">
+  <div class="digit" style="font-size: 140px;">$</div>
+  <!-- Los dígitos del presupuesto se actualizarán dinámicamente -->
 </div>
 
 <script>
@@ -101,48 +60,54 @@ function randomDigit() {
   return Math.floor(Math.random() * 10);
 }
 
-function updateOdometerDisplay(idPrefix, value, length) {
-  const valueStr = value.toString().padStart(length, '0');
-  for (let i = 0; i < length; i++) {
-    document.getElementById(`${idPrefix}${i + 1}`).textContent = valueStr[i];
+function updateOdometerDisplay(value, type, length) {
+  if (type === 'budget') {
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+    const formattedValue = formatter.format(value).slice(1); // Elimina el símbolo de dólar para usar el del HTML
+    document.getElementById(`${type}Container`).innerHTML = `<div class="digit" style="font-size: 280px;">$</div>` + formattedValue.split('').map(num => `<div class="digit">${num}</div>`).join('');
+  } else {
+    const valueStr = value.toString().padStart(length, '0');
+    for (let i = 0; i < length; i++) {
+      document.getElementById(`${type}Digit${i + 1}`).textContent = valueStr[i];
+    }
   }
 }
 
-function confuseBeforeReveal(idPrefix, length, duration, targetValue) {
+function confuseBeforeReveal(duration, targetValue, type, length) {
   const endTime = Date.now() + duration;
   function updateRandomly() {
     if (Date.now() < endTime) {
-      for (let i = 1; i <= length; i++) {
-        document.getElementById(`${idPrefix}${i}`).textContent = randomDigit();
-      }
-      requestAnimationFrame(updateRandomly);
+      const randomValue = Math.floor(Math.random() * Math.pow(10, length));
+      updateOdometerDisplay(randomValue, type, length);
+      setTimeout(updateRandomly, 50); // Ajusta este valor para ralentizar/aumentar la velocidad
     } else {
-      updateOdometerDisplay(idPrefix, targetValue, length);
+      updateOdometerDisplay(targetValue, type, length);
     }
   }
   updateRandomly();
 }
 
+
 async function loadValueFromAppsScript() {
   const scriptUrl = 'https://script.google.com/macros/s/AKfycbyhuzTHRWG8t6mJJuAfY5-y-C7xx8XVK5kJVyiRh_yZpFbpwpcV4SO0yg6Ch5uFziXo/exec';
   try {
     const response = await fetch(scriptUrl);
-    const {ventas, presupuesto} = await response.json();
+    const data = await response.json(); // Asume que el servidor devuelve un objeto JSON
 
-    if (!isNaN(ventas) && ventas >= 0 && ventas <= 999) {
-      confuseBeforeReveal('salesDigit', 3, 2000, ventas); // 2 segundos para ventas
+    if (!isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999 && !isNaN(data.presupuesto) && data.presupuesto >= 0) {
+      confuseBeforeReveal(5000, data.ventas, 'sales', 3); // 3 dígitos para ventas
+      confuseBeforeReveal(5000, data.presupuesto, 'budget', 6); // 6 dígitos ajustados dinámicamente para presupuesto
     } else {
-      alert("El valor de ventas obtenido no es válido.");
-    }
-
-    if (!isNaN(presupuesto) && presupuesto >= 0 && presupuesto <= 999999) {
-      confuseBeforeReveal('budgetDigit', 6, 3000, presupuesto); // 3 segundos para presupuesto
-    } else {
-      alert("El valor de presupuesto obtenido no es válido.");
+      alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que las ventas estén entre 0 y 999 y el presupuesto sea un número positivo.");
     }
   } catch (error) {
-    console.error('Error al cargar los datos:', error);
-    alert('Error al cargar los valores desde Apps Script.');
+    console.error('Error al cargar los datos de Apps Script:', error);
+    alert('Error al cargar el valor desde Apps Script.');
   }
 }
 
@@ -153,5 +118,6 @@ window.onload = function() {
 
 </body>
 </html>
+
 
 
