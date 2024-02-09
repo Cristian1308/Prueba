@@ -72,7 +72,10 @@
 </style>
 </head>
 <body>
-<audio id="pageLoadSound" src="sonido.mp3" preload="auto"></audio>
+<audio autoplay>
+    <source src="Sonido.mp3" type="audio/mp3">
+    Tu navegador no soporta el elemento de audio.
+</audio>
 <center><img src="LOGO JDD BLANCO.png" class="logo"></center>
 <div class="title">Ventas</div>
 <div class="odometer">
@@ -101,7 +104,7 @@ function updateOdometerDisplay(value, type, length) {
       maximumFractionDigits: 0,
     });
     const formattedValue = formatter.format(value).slice(1); // Elimina el símbolo de dólar para usar el del HTML
-    document.getElementById(`${type}Container`).innerHTML = `<div class="digit" style="font-size: 140px;">$</div>` + formattedValue.split('').map(num => `<div class="digit">${num}</div>`).join('');
+    document.getElementById(`${type}Container`).innerHTML = `<div class="digit" style="font-size: 280px;">$</div>` + formattedValue.split('').map(num => `<div class="digit">${num}</div>`).join('');
   } else {
     const valueStr = value.toString().padStart(length, '0');
     for (let i = 0; i < length; i++) {
