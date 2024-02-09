@@ -41,23 +41,27 @@
     padding: 0 5vw; /* Padding horizontal basado en el ancho de la ventana de visualización */
   }
 
-  .digit {
+  .digit, .currency-symbol {
     color: #000;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 0 1vw; /* Espaciado horizontal basado en el ancho de la ventana de visualización */
-    font-size: 15vw; /* Ajusta el tamaño de los dígitos según el ancho de la ventana de visualización */
+    font-size: 30vw; /* DOBLADO: Ajusta el tamaño de los dígitos según el ancho de la ventana de visualización */
     font-weight: 800;
   }
 
+  .currency-symbol {
+    font-size: 20vw; /* DOBLADO: Ajuste específico para el símbolo del dinero, puede variar según la preferencia */
+  }
+
   @media (min-width: 768px) {
-    .title {
+    .title, .digit, .currency-symbol {
       font-size: 2rem; /* Tamaño fijo para pantallas más grandes */
     }
 
-    .digit {
-      font-size: 8rem; /* Tamaño fijo para los dígitos en pantallas más grandes */
+    .digit, .currency-symbol {
+      font-size: 16rem; /* DOBLADO: Tamaño fijo para los dígitos y el símbolo del dinero en pantallas más grandes */
       margin: 0 10px; /* Espaciado fijo para pantallas más grandes */
     }
 
@@ -78,10 +82,10 @@
 
 <div class="title">Facturación</div>
 <div class="odometer" id="budgetContainer">
-  <div class="digit" style="font-size: 15vw;">$</div>
+  <div class="currency-symbol">$</div>
   <!-- Los dígitos del presupuesto se actualizarán dinámicamente -->
 </div>
-
+  
 <script>
 function randomDigit() {
   return Math.floor(Math.random() * 10);
