@@ -20,25 +20,25 @@
   }
 
   img.logo {
-    max-width: 80vw; /* Ajusta el logo a la anchura de la ventana de visualización */
+    max-width: 80vw;
     height: auto;
-    margin: 2vh 0; /* Espaciado vertical basado en la altura de la ventana de visualización */
+    margin: 2vh 0;
   }
 
   .title {
     color: #333;
-    font-size: 4vw; /* Ajusta el tamaño del título según el ancho de la ventana de visualización */
+    font-size: 4vw;
     text-align: center;
-    margin: 2vh 0; /* Espaciado vertical basado en la altura de la ventana de visualización */
+    margin: 2vh 0;
   }
 
   .odometer {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap; /* Permite que los elementos se ajusten en pantallas más pequeñas */
+    flex-wrap: wrap;
     width: 100%;
-    padding: 0 5vw; /* Padding horizontal basado en el ancho de la ventana de visualización */
+    padding: 0 5vw;
   }
 
   .digit, .currency-symbol {
@@ -46,28 +46,35 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 1vw; /* Espaciado horizontal basado en el ancho de la ventana de visualización */
-    font-size: 30vw; /* DOBLADO: Ajusta el tamaño de los dígitos según el ancho de la ventana de visualización */
+    margin: 0 1vw;
+    font-size: 30vw;
     font-weight: 800;
   }
 
   .currency-symbol {
-    font-size: 20vw; /* DOBLADO: Ajuste específico para el símbolo del dinero, puede variar según la preferencia */
+    font-size: 20vw;
   }
 
   @media (min-width: 768px) {
     .title, .digit, .currency-symbol {
-      font-size: 2rem; /* Tamaño fijo para pantallas más grandes */
+      font-size: 2rem;
     }
 
     .digit, .currency-symbol {
-      font-size: 16rem; /* DOBLADO: Tamaño fijo para los dígitos y el símbolo del dinero en pantallas más grandes */
-      margin: 0 10px; /* Espaciado fijo para pantallas más grandes */
+      font-size: 16rem;
+      margin: 0 10px;
     }
 
     img.logo {
-      max-width: 300px; /* Ancho fijo para el logo en pantallas más grandes */
+      max-width: 300px;
     }
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
   }
 </style>
 </head>
@@ -89,6 +96,9 @@
   <div class="currency-symbol">$</div>
   <!-- Los dígitos del presupuesto se actualizarán dinámicamente -->
 </div>
+
+<!-- Botón para iniciar la animación -->
+<button id="startButton">Iniciar Animación</button>
   
 <script>
 function randomDigit() {
@@ -104,7 +114,7 @@ function updateOdometerDisplay(value, type, length) {
       maximumFractionDigits: 0,
     });
     const formattedValue = formatter.format(value).slice(1); // Elimina el símbolo de dólar para usar el del HTML
-    document.getElementById(`${type}Container`).innerHTML = `<div class="digit" style="font-size: 280px;">$</div>` + formattedValue.split('').map(num => `<div class="digit">${num}</div>`).join('');
+    document.getElementById(`${type}Container`).innerHTML = `<div class="currency-symbol">$</div>` + formattedValue.split('').map(num => `<div class="digit">${num}</div>`).join('');
   } else {
     const valueStr = value.toString().padStart(length, '0');
     for (let i = 0; i < length; i++) {
@@ -119,7 +129,7 @@ function confuseBeforeReveal(duration, targetValue, type, length) {
     if (Date.now() < endTime) {
       const randomValue = Math.floor(Math.random() * Math.pow(10, length));
       updateOdometerDisplay(randomValue, type, length);
-      setTimeout(updateRandomly, 50); // Ajusta este valor para ralentizar/aumentar la velocidad
+      setTimeout(updateRandomly, 50);
     } else {
       updateOdometerDisplay(targetValue, type, length);
     }
@@ -127,16 +137,15 @@ function confuseBeforeReveal(duration, targetValue, type, length) {
   updateRandomly();
 }
 
-
 async function loadValueFromAppsScript() {
   const scriptUrl = 'https://script.google.com/macros/s/AKfycbyhuzTHRWG8t6mJJuAfY5-y-C7xx8XVK5kJVyiRh_yZpFbpwpcV4SO0yg6Ch5uFziXo/exec';
   try {
     const response = await fetch(scriptUrl);
-    const data = await response.json(); // Asume que el servidor devuelve un objeto JSON
+    const data = await response.json();
 
     if (!isNaN(data.ventas) && data.ventas >= 0 && data.ventas <= 999 && !isNaN(data.presupuesto) && data.presupuesto >= 0) {
-      confuseBeforeReveal(5000, data.ventas, 'sales', 3); // 3 dígitos para ventas
-      confuseBeforeReveal(5000, data.presupuesto, 'budget', 6); // 6 dígitos ajustados dinámicamente para presupuesto
+      confuseBeforeReveal(5000, data.ventas, 'sales', 3);
+      confuseBeforeReveal(5000, data.presupuesto, 'budget', 6);
     } else {
       alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que las ventas estén entre 0 y 999 y el presupuesto sea un número positivo.");
     }
@@ -146,12 +155,12 @@ async function loadValueFromAppsScript() {
   }
 }
 
-window.onload = function() {
+// Nuevo manejador de eventos para el botón
+document.getElementById('startButton').addEventListener('click', function() {
   loadValueFromAppsScript();
-};
+});
 </script>
 
 </body>
 </html>
-
 
