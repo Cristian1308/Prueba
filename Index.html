@@ -68,18 +68,18 @@
     img.logo {
       max-width: 300px;
     }
-  }
 
-  button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-family: 'Montserrat', sans-serif;
-    cursor: pointer;
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-family: 'Montserrat', sans-serif;
+      cursor: pointer;
+    }
   }
 </style>
 </head>
 <body>
-<audio autoplay>
+<audio id="myAudio">
     <source src="/Sonidiqui.mp3" type="audio/mp3">
     Tu navegador no soporta el elemento de audio.
 </audio>
@@ -94,17 +94,11 @@
 <div class="title">Facturación</div>
 <div class="odometer" id="budgetContainer">
   <div class="currency-symbol">$</div>
-  <!-- Los dígitos del presupuesto se actualizarán dinámicamente -->
 </div>
 
-<!-- Botón para iniciar la animación -->
 <button id="startButton">Iniciar Animación</button>
-  
-<script>
-function randomDigit() {
-  return Math.floor(Math.random() * 10);
-}
 
+<script>
 function updateOdometerDisplay(value, type, length) {
   if (type === 'budget') {
     const formatter = new Intl.NumberFormat('en-US', {
@@ -113,7 +107,7 @@ function updateOdometerDisplay(value, type, length) {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     });
-    const formattedValue = formatter.format(value).slice(1); // Elimina el símbolo de dólar para usar el del HTML
+    const formattedValue = formatter.format(value).slice(1);
     document.getElementById(`${type}Container`).innerHTML = `<div class="currency-symbol">$</div>` + formattedValue.split('').map(num => `<div class="digit">${num}</div>`).join('');
   } else {
     const valueStr = value.toString().padStart(length, '0');
@@ -147,20 +141,19 @@ async function loadValueFromAppsScript() {
       confuseBeforeReveal(5000, data.ventas, 'sales', 3);
       confuseBeforeReveal(5000, data.presupuesto, 'budget', 6);
     } else {
-      alert("El valor obtenido de Google Sheets no es válido. Asegúrate de que las ventas estén entre 0 y 999 y el presupuesto sea un número positivo.");
+      alert("El valor obtenido de Google Sheets no es válido.");
     }
   } catch (error) {
-    console.error('Error al cargar los datos de Apps Script:', error);
+    console.error('Error al cargar los datos:', error);
     alert('Error al cargar el valor desde Apps Script.');
   }
 }
 
-// Nuevo manejador de eventos para el botón
 document.getElementById('startButton').addEventListener('click', function() {
+  document.getElementById('myAudio').play();
   loadValueFromAppsScript();
 });
 </script>
 
 </body>
 </html>
-
